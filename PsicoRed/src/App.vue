@@ -1,16 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
-const isLogged = ref(false)
-
-onMounted(() => {
-  isLogged.value = !!localStorage.getItem('user')
-})
+const route = useRoute()
+const showNav = computed(() => route.path !== '/login')
 </script>
 
 <template>
   <div>
-    <nav v-if="isLogged" class="nav">
+    <nav v-if="showNav" class="nav">
       <router-link to="/dashboard">Dashboard</router-link>
       <router-link to="/profesionales">Profesionales</router-link>
     </nav>
