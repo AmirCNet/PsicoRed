@@ -1,9 +1,40 @@
 <script setup>
 import { ref } from 'vue'
-import { getProfesionales, deleteProfesional } from '../../services/profesionalService'
+import { getProfesionales, addProfesional, updateProfesional, deleteProfesional } from '../../services/profesionalService'
+import ProfesionalForm from './ProfesionalForm.vue'
 
 const profesionales = ref(getProfesionales())
 
+// Modal formulario
+const modalAbierto = ref(false)
+const profesionalEditando = ref(null)  // null = agregar, objeto = editar
+
+const abrirAgregar = () => {
+  profesionalEditando.value = null
+  modalAbierto.value = true
+}
+
+const abrirEditar = (profesional) => {
+  profesionalEditando.value = { ...profesional }
+  modalAbierto.value = true
+}
+
+const cerrarModal = () => {
+  modalAbierto.value = false
+  profesionalEditando.value = null
+}
+
+const guardar = (datos) => {
+  if (profesionalEditando.value) {
+    updateProfesional(profesionalEditando.value.id, datos)
+  } else {
+    addProfesional(datos)
+  }
+  profesionales.value = getProfesionales()
+  cerrarModal()
+}
+
+// --- Eliminar ---
 const eliminar = (id) => {
   deleteProfesional(id)
   profesionales.value = getProfesionales()
@@ -14,7 +45,7 @@ const eliminar = (id) => {
   <div class="profesionales-page">
     <div class="page-header">
       <h1>Gestión de Profesionales</h1>
-      <button class="btn-agregar">+ Agregar profesional</button>
+      <button class="btn-agregar" @click="abrirAgregar">+ Agregar profesional</button>
     </div>
 
     <div class="grid">
@@ -30,7 +61,7 @@ const eliminar = (id) => {
           </div>
         </div>
         <div class="card-actions">
-          <button class="btn-editar">Editar</button>
+          <button class="btn-editar" @click="abrirEditar(p)">Editar</button>
           <button class="btn-eliminar" @click="eliminar(p.id)">Eliminar</button>
         </div>
       </div>
@@ -39,6 +70,9 @@ const eliminar = (id) => {
     <p v-if="profesionales.length === 0" class="empty-state">
       No hay profesionales registrados.
     </p>
+
+    <!-- Modal agregar / editar -->
+    <ProfesionalForm v-if="modalAbierto" :profesional="profesionalEditando" @guardar="guardar" @cerrar="cerrarModal" />
   </div>
 </template>
 
