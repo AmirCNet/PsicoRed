@@ -1,10 +1,7 @@
 <template>
   <div class="dashboard">
-    <h1>¡Bienvenida!</h1>
+    <h1>¡Bienvenido!</h1>
     <p>Ingresaste correctamente al sistema.</p>
-    <router-link to="/profesionales" class="btn">
-      Ver profesionales
-    </router-link>
   </div>
 </template>
 
