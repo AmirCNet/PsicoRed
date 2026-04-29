@@ -1,42 +1,30 @@
-import seedData from '../data/profesionales.json'
+const API = 'http://localhost:3000/api'
 
-const STORAGE_KEY = 'psicored_profesionales'
-
-const cargarDatos = () => {
-  const guardado = localStorage.getItem(STORAGE_KEY)
-  return guardado ? JSON.parse(guardado) : [...seedData]
+export const getProfesionales = async () => {
+  const res = await fetch(`${API}/profesionales`)
+  return res.json()
 }
 
-const guardarDatos = (datos) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(datos))
+export const addProfesional = async (profesional) => {
+  const res = await fetch(`${API}/profesionales`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(profesional)
+  })
+  return res.json()
 }
 
-export const getProfesionales = () => {
-  return cargarDatos()
+export const updateProfesional = async (id, cambios) => {
+  const res = await fetch(`${API}/profesionales/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cambios)
+  })
+  return res.json()
 }
 
-export const addProfesional = (profesional) => {
-  const datos = cargarDatos()
-  const nuevoId = datos.length > 0 ? Math.max(...datos.map(p => p.id)) + 1 : 1
-  const nuevo = { ...profesional, id: nuevoId }
-  datos.push(nuevo)
-  guardarDatos(datos)
-  return nuevo
-}
-
-export const updateProfesional = (id, cambios) => {
-  const datos = cargarDatos()
-  const index = datos.findIndex(p => p.id === id)
-  if (index !== -1) {
-    datos[index] = { ...datos[index], ...cambios }
-    guardarDatos(datos)
-    return datos[index]
-  }
-  return null
-}
-
-export const deleteProfesional = (id) => {
-  const datos = cargarDatos()
-  const filtrado = datos.filter(p => p.id !== id)
-  guardarDatos(filtrado)
+export const deleteProfesional = async (id) => {
+  await fetch(`${API}/profesionales/${id}`, {
+    method: 'DELETE'
+  })
 }

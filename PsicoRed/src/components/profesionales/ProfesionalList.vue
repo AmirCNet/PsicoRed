@@ -1,13 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { getProfesionales, addProfesional, updateProfesional, deleteProfesional } from '../../services/profesionalService'
 import ProfesionalForm from './ProfesionalForm.vue'
 
-const profesionales = ref(getProfesionales())
+const profesionales = ref([])
 
-// Modal formulario
+// Cargar datos al montar el componente
+onMounted(async () => {
+  profesionales.value = await getProfesionales()
+})
+
+// Modal
 const modalAbierto = ref(false)
-const profesionalEditando = ref(null)  // null = agregar, objeto = editar
+const profesionalEditando = ref(null)
 
 const abrirAgregar = () => {
   profesionalEditando.value = null
@@ -24,20 +29,19 @@ const cerrarModal = () => {
   profesionalEditando.value = null
 }
 
-const guardar = (datos) => {
+const guardar = async (datos) => {
   if (profesionalEditando.value) {
-    updateProfesional(profesionalEditando.value.id, datos)
+    await updateProfesional(profesionalEditando.value.id, datos)
   } else {
-    addProfesional(datos)
+    await addProfesional(datos)
   }
-  profesionales.value = getProfesionales()
+  profesionales.value = await getProfesionales()
   cerrarModal()
 }
 
-// --- Eliminar ---
-const eliminar = (id) => {
-  deleteProfesional(id)
-  profesionales.value = getProfesionales()
+const eliminar = async (id) => {
+  await deleteProfesional(id)
+  profesionales.value = await getProfesionales()
 }
 </script>
 
