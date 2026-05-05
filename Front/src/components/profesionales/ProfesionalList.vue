@@ -31,7 +31,7 @@ const cerrarModal = () => {
 
 const guardar = async (datos) => {
   if (profesionalEditando.value) {
-    await updateProfesional(profesionalEditando.value.id, datos)
+    await updateProfesional(profesionalEditando.value._id, datos)
   } else {
     await addProfesional(datos)
   }
@@ -53,7 +53,7 @@ const eliminar = async (id) => {
     </div>
 
     <div class="grid">
-      <div v-for="p in profesionales" :key="p.id" class="card">
+      <div v-for="p in profesionales" :key="p._id" class="card">
         <div class="card-avatar">{{ p.nombre.charAt(0) }}</div>
         <div class="card-body">
           <h3 class="card-nombre">{{ p.nombre }}</h3>
@@ -66,7 +66,7 @@ const eliminar = async (id) => {
         </div>
         <div class="card-actions">
           <button class="btn-editar" @click="abrirEditar(p)">Editar</button>
-          <button class="btn-eliminar" @click="eliminar(p.id)">Eliminar</button>
+          <button class="btn-eliminar" @click="eliminar(p._id)">Eliminar</button>
         </div>
       </div>
     </div>
