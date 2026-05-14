@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Profesionales from '../views/Profesionales.vue'
+import { isAuthenticated } from '../services/authService'
 
 const routes = [
     {
@@ -10,19 +11,39 @@ const routes = [
     },
     {
         path: '/login',
-        component: Login
+        component: Login,
+        meta: { requiresGuest: true }
     },
     {
         path: '/dashboard',
-        component: Dashboard
+        component: Dashboard,
+        meta: { requiresAuth: true }
     },
     {
         path: '/profesionales',
-        component: Profesionales
+        component: Profesionales,
+        meta: { requiresAuth: true }
     }
 ]
 
 export const router = createRouter({
     history: createWebHistory(),
     routes
+})
+
+// ── Guard Navigation
+router.beforeEach((to, from, next) => {
+    const loggedIn = isAuthenticated()
+
+    // Si quiere ir a una ruta protegida y no está logueado → ir al login
+    if (to.meta.requiresAuth && !loggedIn) {
+        return next('/login')
+    }
+
+    // Si ya está logueado e intenta ir al login → redirigir al dashboard
+    if (to.meta.requiresGuest && loggedIn) {
+        return next('/dashboard')
+    }
+
+    next()
 })

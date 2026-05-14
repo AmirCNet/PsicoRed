@@ -40,31 +40,27 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/authStore'
 
-const router = useRouter()
-
-// Mock de usuarios (temporal, reemplazar con Supabase)
-const USUARIOS = [
-  { email: 'admin@psicored.com',   password: '1234' },
-  { email: 'ana@psicored.com',     password: 'ana123' },
-  { email: 'carlos@psicored.com',  password: 'carlos123' },
-]
+const router    = useRouter()
+const authStore = useAuthStore()
 
 const email    = ref('')
 const password = ref('')
 const error    = ref('')
+const loading  = ref(false)
 
-const handleLogin = () => {
-  error.value = ''
+const handleLogin = async () => {
+  error.value   = ''
+  loading.value = true
 
-  const usuario = USUARIOS.find(
-    u => u.email === email.value && u.password === password.value
-  )
-
-  if (usuario) {
+  try {
+    await authStore.login(email.value, password.value)
     router.push('/dashboard')
-  } else {
-    error.value = 'Usuario o contraseña incorrectos.'
+  } catch (err) {
+    error.value = err.message || 'Usuario o contraseña incorrectos.'
+  } finally {
+    loading.value = false
   }
 }
 </script>
