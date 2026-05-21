@@ -1,0 +1,68 @@
+const supabase = require('../../db/supabaseClient')
+
+const getAll = async (usuarioId, rolUsuario) => {
+  let query = supabase
+    .from('pacientes')
+    .select(`
+      *,
+      creado_por_usuario:usuarios!pacientes_creado_por_fkey(id, email)
+    `)
+    .order('apellido', { ascending: true })
+
+  // Los profesionales solo ven sus pacientes (los que ellos crearon)
+  if (rolUsuario === 'profesional') {
+    query = query.eq('creado_por', usuarioId)
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  return data
+}
+
+const getById = async (id) => {
+  const { data, error } = await supabase
+    .from('pacientes')
+    .select(`
+      *,
+      creado_por_usuario:usuarios!pacientes_creado_por_fkey(id, email)
+    `)
+    .eq('id', id)
+    .single()
+  if (error || !data) throw new Error('Paciente no encontrado')
+  return data
+}
+
+const create = async (body, usuarioId) => {
+  const { data, error } = await supabase
+    .from('pacientes')
+    .insert({ ...body, creado_por: usuarioId })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+const update = async (id, cambios) => {
+  const { data, error } = await supabase
+    .from('pacientes')
+    .update(cambios)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+const remove = async (id) => {
+  // Cambiar estado a 'alta' en lugar de eliminar
+  const { data, error } = await supabase
+    .from('pacientes')
+    .update({ estado: 'alta' })
+    .eq('id', id)
+    .select('id, estado')
+    .single()
+  if (error) throw error
+  return data
+}
+
+module.exports = { getAll, getById, create, update, remove }

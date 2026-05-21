@@ -4,3 +4,7 @@ dist-ssr/
 *.local
 .DS_Store
 *.log
+MVPs.md
+bff/.env
+Backend/.env
+BasedeDatos.txt
