@@ -23,6 +23,25 @@ export const login = async (email, password) => {
   return data
 }
 
+/*
+Registra una nueva cuenta. Retorna { mensaje, usuario } con rol null (pendiente).
+*/
+export const register = async (email, password) => {
+  const res = await fetch(`${API}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Error al registrarse')
+  }
+
+  return data
+}
+
 
 //Cierra la sesión limpiando el localStorage.
 export const logout = () => {

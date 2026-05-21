@@ -22,4 +22,20 @@ const me = async (req, res) => {
   }
 }
 
-module.exports = { login, me }
+const register = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email y contraseña son requeridos' })
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' })
+    }
+    const usuario = await authService.register(email, password)
+    res.status(201).json({ mensaje: 'Cuenta creada. Esperá la aprobación del administrador.', usuario })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+}
+
+module.exports = { login, me, register }

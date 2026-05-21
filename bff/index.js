@@ -42,9 +42,11 @@ const proxy = async (req, res, path) => {
 
 // ── Auth
 app.post('/api/auth/login', (req, res) => proxy(req, res, '/api/auth/login'))
+app.post('/api/auth/register', (req, res) => proxy(req, res, '/api/auth/register'))
 app.get('/api/auth/me', (req, res) => proxy(req, res, '/api/auth/me'))
 
 // ── Profesionales
+app.get('/api/profesionales/mi-perfil', (req, res) => proxy(req, res, '/api/profesionales/mi-perfil'))
 app.get('/api/profesionales', (req, res) => proxy(req, res, '/api/profesionales'))
 app.get('/api/profesionales/:id', (req, res) => proxy(req, res, `/api/profesionales/${req.params.id}`))
 app.post('/api/profesionales', (req, res) => proxy(req, res, '/api/profesionales'))
@@ -52,10 +54,12 @@ app.put('/api/profesionales/:id', (req, res) => proxy(req, res, `/api/profesiona
 app.delete('/api/profesionales/:id', (req, res) => proxy(req, res, `/api/profesionales/${req.params.id}`))
 
 // ── Usuarios
+app.get('/api/usuarios/pendientes', (req, res) => proxy(req, res, '/api/usuarios/pendientes'))
 app.get('/api/usuarios', (req, res) => proxy(req, res, '/api/usuarios'))
 app.get('/api/usuarios/:id', (req, res) => proxy(req, res, `/api/usuarios/${req.params.id}`))
 app.post('/api/usuarios', (req, res) => proxy(req, res, '/api/usuarios'))
 app.put('/api/usuarios/:id', (req, res) => proxy(req, res, `/api/usuarios/${req.params.id}`))
+app.patch('/api/usuarios/:id/aprobar', (req, res) => proxy(req, res, `/api/usuarios/${req.params.id}/aprobar`))
 app.delete('/api/usuarios/:id', (req, res) => proxy(req, res, `/api/usuarios/${req.params.id}`))
 
 // ── Especializaciones
