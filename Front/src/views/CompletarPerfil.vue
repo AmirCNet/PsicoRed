@@ -100,7 +100,6 @@ const handleSubmit = async () => {
 
   loading.value = true
   try {
-    // Armar el body: incluir usuario_id del token para vincular el perfil
     const datos = {
       usuario_id: authStore.usuario.id,
       nombre:     form.value.nombre.trim(),

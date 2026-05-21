@@ -12,7 +12,7 @@ export const getPendientes = async () => {
   return data
 }
 
-// Aprueba un usuario pendiente asignándole rol de profesional
+// Aprobar un usuario pendiente asignándole rol profesional
 export const aprobarUsuario = async (id) => {
   const res = await fetch(`${API}/usuarios/${id}/aprobar`, {
     method: 'PATCH',

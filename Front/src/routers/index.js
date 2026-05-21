@@ -48,8 +48,8 @@ export const router = createRouter({
 // ── Guard de navegación
 router.beforeEach((to, from, next) => {
   const loggedIn = isAuthenticated()
-  const usuario  = getUsuario()
-  const rol      = usuario?.rol ?? null
+  const usuario = getUsuario()
+  const rol = usuario?.rol ?? null
 
   const perfilCompleto = JSON.parse(localStorage.getItem('perfilCompleto') ?? 'false')
 
@@ -59,7 +59,7 @@ router.beforeEach((to, from, next) => {
     return next('/login')
   }
 
-  // Logueado con rol=null (pendiente de aprobación) → solo /pendiente
+  // Logueado con rol=null (pendiente de aprobación) → solo devuelve a la ruta /pendiente
   if (rol === null) {
     if (to.path === '/pendiente') return next()
     return next('/pendiente')
@@ -72,8 +72,8 @@ router.beforeEach((to, from, next) => {
   }
 
   // Ya logueado con rol válido y perfil completo → no puede ir al login ni a rutas de estado
-  if (to.meta.requiresGuest)            return next('/dashboard')
-  if (to.meta.requiresPendiente)        return next('/dashboard')
+  if (to.meta.requiresGuest) return next('/dashboard')
+  if (to.meta.requiresPendiente) return next('/dashboard')
   if (to.meta.requiresPerfilIncompleto) return next('/dashboard')
 
   // Ruta protegida normal

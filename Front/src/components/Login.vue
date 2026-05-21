@@ -236,7 +236,7 @@ const handleRegister = async () => {
   overflow: hidden;
 }
 
-/* ── Track: fila con ambos paneles lado a lado */
+/* ── Track: Ambos paneles lado a lado */
 .slides-track {
   display: flex;
   width: 200%;

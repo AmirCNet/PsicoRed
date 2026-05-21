@@ -23,7 +23,7 @@
   max-width: 400px;
   box-shadow: 0 4px 24px rgba(77, 14, 11, 0.10);
   border: 1px solid var(--rose-light);
-  overflow: hidden;   /* Necesario para el slide del registro */
+  overflow: hidden;   /* Slide del registro */
   position: relative;
 }
-</style>
+</style>

@@ -5,7 +5,7 @@ const authHeaders = () => ({
   'Authorization': `Bearer ${localStorage.getItem('token')}`
 })
 
-// Retorna el perfil del profesional logueado (null si aún no lo completó)
+// Devuelve el perfil del profesional logueado (null si aún no lo completó)
 export const getMiPerfil = async () => {
   const res = await fetch(`${API}/profesionales/mi-perfil`, { headers: authHeaders() })
   if (!res.ok) throw new Error('Error al obtener perfil')
@@ -52,4 +52,4 @@ export const deleteProfesional = async (id) => {
     method: 'DELETE',
     headers: authHeaders()
   })
-}
+}

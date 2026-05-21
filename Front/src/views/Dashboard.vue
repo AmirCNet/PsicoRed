@@ -10,9 +10,6 @@
         {{ authStore.esAdmin ? 'Administrador' : 'Profesional' }}
       </span>
       <p class="msg">Ingresaste correctamente al sistema.</p>
-      <button class="btn-logout" @click="cerrarSesion">
-        Cerrar sesión
-      </button>
     </div>
 
     <!-- Panel de pendientes: solo visible para el administrador -->
@@ -69,22 +66,15 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 import { getPendientes, aprobarUsuario } from '../services/usuariosService'
 
-const router    = useRouter()
 const authStore = useAuthStore()
 
 const iniciales = computed(() => {
   const email = authStore.usuario?.email ?? ''
   return email.slice(0, 2).toUpperCase()
 })
-
-const cerrarSesion = () => {
-  authStore.logout()
-  router.push('/login')
-}
 
 // ── Panel de pendientes
 const pendientes = ref([])
@@ -195,23 +185,6 @@ h1 {
 .badge-admin { background: #fce8e8; color: #b91c1c; }
 .badge-pro   { background: #e8f0fc; color: #1c4bb9; }
 
-.btn-logout {
-  margin-top: 1rem;
-  padding: 0.65rem 1.5rem;
-  background: transparent;
-  color: var(--wine);
-  border: 1.5px solid var(--wine);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-logout:hover {
-  background: var(--wine);
-  color: white;
-}
 
 /* ── Panel pendientes */
 .pendientes-panel {
