@@ -18,9 +18,9 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { nombre, apellido } = req.body
-    if (!nombre || !apellido) {
-      return res.status(400).json({ error: 'nombre y apellido son requeridos' })
+    const { nombre, apellido, email, telefono, direccion } = req.body
+    if (!nombre || !apellido || !email || !telefono || !direccion) {
+      return res.status(400).json({ error: 'Todos los campos son requeridos' })
     }
     res.status(201).json(await pacientesService.create(req.body, req.user.id))
   } catch (err) {

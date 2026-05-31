@@ -11,6 +11,7 @@ const showNav = computed(() => route.path !== '/login')
     <nav v-if="showNav" class="nav">
       <router-link to="/dashboard">Dashboard</router-link>
       <router-link to="/profesionales">Profesionales</router-link>
+      <router-link to="/pacientes">Pacientes</router-link>
     </nav>
 
     <router-view />
