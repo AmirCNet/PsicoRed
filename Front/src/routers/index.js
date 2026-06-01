@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Profesionales from '../views/Profesionales.vue'
+import Pacientes from '../views/Pacientes.vue'
 import Pendiente from '../views/Pendiente.vue'
 import CompletarPerfil from '../views/CompletarPerfil.vue'
 import { isAuthenticated, getUsuario } from '../services/authService'
@@ -36,6 +37,11 @@ const routes = [
   {
     path: '/profesionales',
     component: Profesionales,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/pacientes',
+    component: Pacientes,
     meta: { requiresAuth: true }
   }
 ]
