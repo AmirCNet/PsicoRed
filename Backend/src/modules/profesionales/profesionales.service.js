@@ -15,6 +15,19 @@ const getAll = async () => {
   return data
 }
 
+const getByUsuarioId = async (usuarioId) => {
+  const { data, error } = await supabase
+    .from('profesionales')
+    .select(`
+      *,
+      usuario:usuarios(id, email, rol)
+    `)
+    .eq('usuario_id', usuarioId)
+    .maybeSingle()  // Retorna null si no existe (no lanza error)
+  if (error) throw error
+  return data  // null si no tiene perfil aún
+}
+
 const getById = async (id) => {
   const { data, error } = await supabase
     .from('profesionales')
@@ -97,4 +110,4 @@ const remove = async (id) => {
   return { mensaje: 'Profesional eliminado correctamente' }
 }
 
-module.exports = { getAll, getById, create, update, remove }
+module.exports = { getAll, getByUsuarioId, getById, create, update, remove }

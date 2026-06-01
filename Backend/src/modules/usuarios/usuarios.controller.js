@@ -18,6 +18,24 @@ const getById = async (req, res) => {
   }
 }
 
+const getPendientes = async (req, res) => {
+  try {
+    const data = await usuariosService.getPendientes()
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+const aprobar = async (req, res) => {
+  try {
+    const data = await usuariosService.aprobar(req.params.id)
+    res.json({ mensaje: 'Usuario aprobado correctamente', usuario: data })
+  } catch (err) {
+    res.status(400).json({ error: err.message })
+  }
+}
+
 const create = async (req, res) => {
   try {
     const { email, password, rol } = req.body
@@ -49,4 +67,4 @@ const remove = async (req, res) => {
   }
 }
 
-module.exports = { getAll, getById, create, update, remove }
+module.exports = { getAll, getById, getPendientes, aprobar, create, update, remove }

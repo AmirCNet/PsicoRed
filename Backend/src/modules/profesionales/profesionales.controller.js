@@ -8,6 +8,16 @@ const getAll = async (req, res) => {
   }
 }
 
+// Retorna el perfil del profesional logueado (null si aún no lo completó)
+const getMiPerfil = async (req, res) => {
+  try {
+    const perfil = await profesionalesService.getByUsuarioId(req.user.id)
+    res.json(perfil)  // null si no existe, objeto si existe
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
 const getById = async (req, res) => {
   try {
     res.json(await profesionalesService.getById(req.params.id))
@@ -41,4 +51,4 @@ const remove = async (req, res) => {
   }
 }
 
-module.exports = { getAll, getById, create, update, remove }
+module.exports = { getAll, getMiPerfil, getById, create, update, remove }

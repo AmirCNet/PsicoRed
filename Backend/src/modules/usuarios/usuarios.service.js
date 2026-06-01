@@ -20,6 +20,31 @@ const getById = async (id) => {
   return data
 }
 
+// Devuelve los usuarios que aún no tienen rol asignado (pendientes de aprobación)
+const getPendientes = async () => {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select('id, email, activo, creado_en')
+    .is('rol', null)
+    .order('creado_en', { ascending: true })
+  if (error) throw error
+  return data
+}
+
+// Aprueba un usuario pendiente asignándole el rol de profesional
+const aprobar = async (id) => {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .update({ rol: 'profesional' })
+    .eq('id', id)
+    .is('rol', null)   // Solo se puede aprobar si está pendiente
+    .select('id, email, rol')
+    .single()
+  if (error) throw error
+  if (!data) throw new Error('Usuario no encontrado o ya tenía un rol asignado')
+  return data
+}
+
 const create = async ({ email, password, rol }) => {
   const password_hash = await bcrypt.hash(password, 10)
   const { data, error } = await supabase
@@ -59,4 +84,4 @@ const remove = async (id) => {
   return data
 }
 
-module.exports = { getAll, getById, create, update, remove }
+module.exports = { getAll, getById, getPendientes, aprobar, create, update, remove }
