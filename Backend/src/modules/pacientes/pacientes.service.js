@@ -3,10 +3,8 @@ const supabase = require('../../db/supabaseClient')
 const getAll = async (usuarioId, rolUsuario) => {
   let query = supabase
     .from('pacientes')
-    .select(`
-      *,
-      creado_por_usuario:usuarios!pacientes_creado_por_fkey(id, email)
-    `)
+    .select('*')
+    .neq('estado', 'inactivo')
     .order('apellido', { ascending: true })
 
   // Los profesionales solo ven sus pacientes (los que ellos crearon)
@@ -22,10 +20,7 @@ const getAll = async (usuarioId, rolUsuario) => {
 const getById = async (id) => {
   const { data, error } = await supabase
     .from('pacientes')
-    .select(`
-      *,
-      creado_por_usuario:usuarios!pacientes_creado_por_fkey(id, email)
-    `)
+    .select('*')
     .eq('id', id)
     .single()
   if (error || !data) throw new Error('Paciente no encontrado')
@@ -35,7 +30,7 @@ const getById = async (id) => {
 const create = async (body, usuarioId) => {
   const { data, error } = await supabase
     .from('pacientes')
-    .insert({ ...body, creado_por: usuarioId })
+    .insert({ ...body, creado_por: usuarioId, estado: 'activo' })
     .select()
     .single()
   if (error) throw error
@@ -54,10 +49,10 @@ const update = async (id, cambios) => {
 }
 
 const remove = async (id) => {
-  // Cambiar estado a 'alta' en lugar de eliminar
+  // Cambiar estado a 'inactivo' en lugar de eliminar
   const { data, error } = await supabase
     .from('pacientes')
-    .update({ estado: 'alta' })
+    .update({ estado: 'inactivo' })
     .eq('id', id)
     .select('id, estado')
     .single()

@@ -31,8 +31,15 @@ watch(
   { immediate: true }
 )
 
+const formValido = () => {
+  return form.value.nombre && form.value.apellido && form.value.email && form.value.telefono && form.value.direccion
+}
+
 const guardar = () => {
-  if (!form.value.nombre || !form.value.apellido || !form.value.email || !form.value.telefono || !form.value.direccion) return
+  if (!formValido()) {
+    alert('Todos los campos son obligatorios')
+    return
+  }
   emit('guardar', { ...form.value })
 }
 </script>
@@ -50,27 +57,27 @@ const guardar = () => {
       <form class="modal-body" @submit.prevent="guardar">
         <div class="campo">
           <label>Nombre *</label>
-          <input v-model="form.nombre" type="text" placeholder="Nombre" />
+          <input v-model="form.nombre" type="text" placeholder="Nombre" required />
         </div>
 
         <div class="campo">
           <label>Apellido *</label>
-          <input v-model="form.apellido" type="text" placeholder="Apellido" />
+          <input v-model="form.apellido" type="text" placeholder="Apellido" required />
         </div>
 
         <div class="campo">
-          <label>Email</label>
-          <input v-model="form.email" type="email" placeholder="correo@psicored.com" />
+          <label>Email *</label>
+          <input v-model="form.email" type="email" placeholder="correo@psicored.com" required />
         </div>
 
         <div class="campo">
-          <label>Teléfono</label>
-          <input v-model="form.telefono" type="text" placeholder="+54 9 11 0000-0000" />
+          <label>Teléfono *</label>
+          <input v-model="form.telefono" type="text" placeholder="+54 9 11 0000-0000" required />
         </div>
 
         <div class="campo">
-          <label>Dirección</label>
-          <input v-model="form.direccion" type="text" placeholder="Dirección" />
+          <label>Dirección *</label>
+          <input v-model="form.direccion" type="text" placeholder="Dirección" required />
         </div>
 
         <div class="modal-footer">
@@ -226,7 +233,14 @@ const guardar = () => {
   transition: background 0.2s;
 }
 
-.btn-guardar:hover {
+.btn-guardar:hover:not(:disabled) {
   background: #6e1832;
+}
+
+.btn-guardar:disabled {
+  background: #ccc;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>
