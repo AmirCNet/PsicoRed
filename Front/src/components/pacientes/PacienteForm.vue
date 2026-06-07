@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   paciente: {
@@ -15,8 +15,33 @@ const form = ref({
   apellido: '',
   email: '',
   telefono: '',
-  direccion: ''
+  direccion: '',
+  fecha_nacimiento: '',
+  motivo_consulta: '',
+  estado: 'activo',
+  derivadoA: '',
+  notas: ''
 })
+
+const formEl = ref(null)
+
+// Fecha máxima (hoy) para el input date en formato YYYY-MM-DD
+const today = new Date().toISOString().split('T')[0]
+
+const autoResize = (e) => {
+  const ta = e.target
+  ta.style.height = 'auto'
+  ta.style.height = (ta.scrollHeight) + 'px'
+}
+
+const adjustAllTextareas = () => {
+  if (!formEl.value) return
+  const tas = formEl.value.querySelectorAll('textarea')
+  tas.forEach((ta) => {
+    ta.style.height = 'auto'
+    ta.style.height = (ta.scrollHeight) + 'px'
+  })
+}
 
 // Si viene un paciente (modo edición), prellenar el formulario
 watch(
@@ -24,8 +49,21 @@ watch(
   (val) => {
     if (val) {
       form.value = { ...val }
+      // Después de precargar, ajustar textareas al contenido
+      nextTick(() => adjustAllTextareas())
     } else {
-      form.value = { nombre: '', apellido: '', email: '', telefono: '', direccion: '' }
+      form.value = {
+        nombre: '',
+        apellido: '',
+        email: '',
+        telefono: '',
+        direccion: '',
+        fecha_nacimiento: '',
+        motivo_consulta: '',
+        estado: 'activo',
+        derivadoA: '',
+        notas: ''
+      }
     }
   },
   { immediate: true }
@@ -40,6 +78,12 @@ const guardar = () => {
     alert('Todos los campos son obligatorios')
     return
   }
+  // Validación: la fecha de nacimiento no puede ser mayor a hoy
+  if (form.value.fecha_nacimiento && form.value.fecha_nacimiento > today) {
+    alert('La fecha de nacimiento no puede ser posterior a hoy')
+    return
+  }
+
   emit('guardar', { ...form.value })
 }
 </script>
@@ -54,7 +98,7 @@ const guardar = () => {
         <button class="btn-cerrar" @click="emit('cerrar')">✕</button>
       </div>
 
-      <form class="modal-body" @submit.prevent="guardar">
+      <form ref="formEl" class="modal-body" @submit.prevent="guardar">
         <div class="campo">
           <label>Nombre *</label>
           <input v-model="form.nombre" type="text" placeholder="Nombre" required />
@@ -78,6 +122,35 @@ const guardar = () => {
         <div class="campo">
           <label>Dirección *</label>
           <input v-model="form.direccion" type="text" placeholder="Dirección" required />
+        </div>
+
+        <div class="campo">
+          <label>Fecha de nacimiento</label>
+          <input v-model="form.fecha_nacimiento" type="date" :max="today" />
+        </div>
+
+        <div class="campo">
+          <label>Motivo de consulta</label>
+          <textarea v-model="form.motivo_consulta" placeholder="Motivo por el que consulta" rows="3" @input="autoResize"></textarea>
+        </div>
+
+        <div class="campo">
+          <label>Estado</label>
+          <select v-model="form.estado">
+            <option value="activo">Activo</option>
+            <option value="derivado">Derivado</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+
+        <div v-if="form.estado === 'derivado'" class="campo">
+          <label>Derivado a (profesional)</label>
+          <input v-model="form.derivadoA" type="text" placeholder="Nombre del profesional al que se derivó" />
+        </div>
+
+        <div class="campo">
+          <label>Notas particulares</label>
+          <textarea v-model="form.notas" placeholder="Notas internas" rows="3" @input="autoResize"></textarea>
         </div>
 
         <div class="modal-footer">
@@ -116,8 +189,11 @@ const guardar = () => {
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   width: 100%;
-  max-width: 460px;
+  max-width: 900px;
   margin: 1rem;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   /* Animación de entrada con leve efecto de escala */
   animation: slideUp 0.2s ease;
 }
@@ -159,18 +235,25 @@ const guardar = () => {
   color: #8b1e3f;
 }
 
-/* Cuerpo del formulario */
+/* Tamaños del formulario */
 .modal-body {
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
 }
 
 .campo {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+/* Los campos de textarea ocupan 2 columnas */
+.campo:has(textarea) {
+  grid-column: 1 / -1;
 }
 
 .campo label {
@@ -191,11 +274,41 @@ const guardar = () => {
   transition: border-color 0.2s;
 }
 
-.campo input:focus {
+.campo select {
+  border: 1.5px solid #e5d6db;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  outline: none;
+  transition: border-color 0.2s;
+  background-color: white;
+  cursor: pointer;
+}
+
+
+.campo textarea {
+  border: 1.5px solid #e5d6db;
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
   border-color: #8b1e3f;
 }
 
 .campo input::placeholder {
+  color: #bbb;
+}
+
+.campo textarea::placeholder {
   color: #bbb;
 }
 
@@ -204,7 +317,10 @@ const guardar = () => {
   display: flex;
   gap: 0.75rem;
   justify-content: flex-end;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
+  grid-column: 1 / -1;
+  padding-top: 1rem;
+  border-top: 1px solid #f0e6ea;
 }
 
 .btn-cancelar {
