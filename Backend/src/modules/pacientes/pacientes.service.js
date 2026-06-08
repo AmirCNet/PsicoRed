@@ -28,9 +28,10 @@ const getById = async (id) => {
 }
 
 const create = async (body, usuarioId) => {
+  const estadoFinal = body && body.estado ? body.estado : 'activo'
   const { data, error } = await supabase
     .from('pacientes')
-    .insert({ ...body, creado_por: usuarioId, estado: 'activo' })
+    .insert({ ...body, creado_por: usuarioId, estado: estadoFinal })
     .select()
     .single()
   if (error) throw error
