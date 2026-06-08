@@ -7,7 +7,12 @@ const pacientes = ref([])
 
 // Cargar datos al montar el componente
 onMounted(async () => {
-  pacientes.value = await getPacientes()
+  try {
+    pacientes.value = await getPacientes()
+  } catch (err) {
+    console.error('Error al obtener pacientes', err)
+    alert(err.message || 'Error al obtener pacientes')
+  }
 })
 
 // Modal
@@ -29,19 +34,38 @@ const cerrarModal = () => {
   pacienteEditando.value = null
 }
 
+const cargando = ref(false)
+
 const guardar = async (datos) => {
-  if (pacienteEditando.value) {
-    await updatePaciente(pacienteEditando.value.id, datos)
-  } else {
-    await createPaciente(datos)
+  try {
+    cargando.value = true
+    if (pacienteEditando.value) {
+      await updatePaciente(pacienteEditando.value.id, datos)
+    } else {
+      await createPaciente(datos)
+    }
+    pacientes.value = await getPacientes()
+    cerrarModal()
+  } catch (err) {
+    console.error('Error al guardar paciente', err)
+    alert(err.message || 'Error al guardar paciente')
+  } finally {
+    cargando.value = false
   }
-  pacientes.value = await getPacientes()
-  cerrarModal()
 }
 
 const eliminar = async (id) => {
-  await deletePaciente(id)
-  pacientes.value = await getPacientes()
+  if (!confirm('¿Seguro que querés eliminar este paciente?')) return
+  try {
+    cargando.value = true
+    await deletePaciente(id)
+    pacientes.value = await getPacientes()
+  } catch (err) {
+    console.error('Error al eliminar paciente', err)
+    alert(err.message || 'Error al eliminar paciente')
+  } finally {
+    cargando.value = false
+  }
 }
 
 </script>
@@ -58,6 +82,10 @@ const eliminar = async (id) => {
         <div class="card-avatar">{{ p.nombre.charAt(0) }}</div>
         <div class="card-body">
           <h3 class="card-nombre">{{ p.nombre }}</h3>
+        </div>
+        <div class="card-actions">
+          <button class="btn-editar" @click="abrirEditar(p)">Editar</button>
+          <button class="btn-eliminar" @click="eliminar(p.id)">Eliminar</button>
         </div>
       </div>
     </div>
