@@ -1,0 +1,9 @@
+[submodule "Front"]
+	path = Front
+	url = https://github.com/AmirCNet/PsicoRed-Front.git
+[submodule "BFF"]
+	path = BFF
+	url = https://github.com/AmirCNet/PsicoRed-BFF.git
+[submodule "Backend"]
+	path = Backend
+	url = https://github.com/AmirCNet/PsicoRed-Backend.git
