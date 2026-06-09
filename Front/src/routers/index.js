@@ -3,6 +3,7 @@ import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Profesionales from '../views/Profesionales.vue'
 import Pacientes from '../views/Pacientes.vue'
+import Derivaciones from '../views/Derivaciones.vue'
 import Pendiente from '../views/Pendiente.vue'
 import CompletarPerfil from '../views/CompletarPerfil.vue'
 import { isAuthenticated, getUsuario } from '../services/authService'
@@ -43,6 +44,11 @@ const routes = [
     path: '/pacientes',
     component: Pacientes,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/derivaciones',
+    component: Derivaciones,
+    meta: { requiresAuth: true, requiresAdmin: true }
   }
 ]
 
@@ -81,6 +87,11 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresGuest) return next('/dashboard')
   if (to.meta.requiresPendiente) return next('/dashboard')
   if (to.meta.requiresPerfilIncompleto) return next('/dashboard')
+
+  // Rutas solo para administradores
+  if (to.meta.requiresAdmin && usuario?.rol !== 'administrador') {
+    return next('/dashboard')
+  }
 
   // Ruta protegida normal
   return next()
