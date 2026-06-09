@@ -1,11 +1,27 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/authStore'
 
 const route     = useRoute()
 const router    = useRouter()
 const authStore = useAuthStore()
+
+// Al iniciar, si hay un token guardado, validar que siga siendo válido
+onMounted(async () => {
+  if (!authStore.isAuthenticated) return
+
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/me', {
+      headers: { 'Authorization': `Bearer ${authStore.token}` }
+    })
+    if (!res.ok) throw new Error('Token inválido')
+  } catch {
+    // Token expirado o inválido → cerrar sesión y redirigir al login
+    authStore.logout()
+    router.push('/login')
+  }
+})
 
 // Mostrar sidebar solo en rutas del sistema (no en auth ni en estados intermedios)
 const showSidebar = computed(() => {
@@ -76,6 +92,15 @@ const cerrarSesion = () => {
             <line x1="23" y1="11" x2="17" y2="11"/>
           </svg>
           <span>Pacientes</span>
+        </router-link>
+
+        <router-link v-if="authStore.esAdmin" to="/derivaciones" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 14 20 9 15 4"/>
+            <path d="M4 20v-7a4 4 0 0 1 4-4h12"/>
+          </svg>
+          <span>Derivaciones</span>
         </router-link>
       </nav>
 
