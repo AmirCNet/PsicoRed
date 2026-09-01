@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.DS_Store
+*.log
+MVPs.md
+bff/.env
+Backend/.env
+BasedeDatos.txt
+context_psicored.md
+.agents/rules
